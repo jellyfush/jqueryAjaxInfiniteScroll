@@ -1,0 +1,27 @@
+<html>
+<head>
+	<title>Ajax Infinite Scroll Example</title>
+	<style type="text/css">
+		#infiniteScroll{
+			width:300px;
+			height:300px;
+			overflow: auto;
+		}
+	</style>
+</head>
+<body>
+
+	<div id="infiniteScroll"></div>
+
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="jquery.ajaxInfiniteScroll.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('#infiniteScroll').ajaxInfiniteScroll({
+				url: 'testPage.html',
+				initialLoad: true
+			});
+		});
+	</script>
+</body>
+</html>

@@ -3,6 +3,7 @@
 	var AjaxInfiniteScroll = function(element, options)
 	{
 		var $elem = $(element);
+		var $scrollElem;
 		var obj = this;
 		var settings = $.extend({
 			initialLoad: false,
@@ -11,8 +12,15 @@
 			distanceToTrigger: 30,
 			loadLag:2000,
 			loadingHTML: '<div class="InfiniteScrollLoading">Loading...</div>',
-			stopOnEmpty: true
+			stopOnEmpty: true,
+			scrollElem: $elem,
+			beforeAdd: function($data){ return $data; }
 		}, options || {});
+		
+		if(settings.scrollElem == "window")
+			var $scrollElem = $(window);
+		else
+			var $scrollElem = $(settings.scrollElem);
 		
 		var stop = false;
 		var loading = false;
@@ -48,6 +56,7 @@
 						stopLoading();
 					}else{
 						$response = $(response);
+						$response = settings.beforeAdd($response);
 						$response.hide();
 						$elem.append($response);
 						$response.slideDown();
@@ -59,16 +68,28 @@
 		}
 		
 		var checkAndLoad = function(){
-			if($elem[0].scrollHeight - $elem.scrollTop() - settings.distanceToTrigger <= $elem.outerHeight() && $elem.scrollTop() != 0){
+			if(settings.scrollElem == "window")
+				tryLoad = checkWindow();
+			else
+				tryLoad = checkElem();
+			if(tryLoad){
 				if(!loading && settings.page <= settings.pageLimit && !stop)
 					load();
 			}		
 		}
 		
+		var checkElem = function(){
+			return (settings.scrollElem[0].scrollHeight - settings.scrollElem.scrollTop() - settings.distanceToTrigger <= settings.scrollElem.outerHeight() && settings.scrollElem.scrollTop() != 0);
+		}
+		
+		var checkWindow = function(){
+			return ($(window).height() + $(window).scrollTop() + settings.distanceToTrigger >= $(document).height() && $(window).scrollTop() != 0);
+		}
+			
 		if(settings.initialLoad)
 			load();
 
-		$elem.scroll(function (){
+		$scrollElem.scroll(function(){
 			checkAndLoad();
 		});
 			
